@@ -6,6 +6,7 @@ import java.util.List;
 
 import nehe.demo.Modals.Product;
 import nehe.demo.Repositories.ProductRepository;
+import nehe.demo.Repositories.PurchaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +25,17 @@ public class ProductService {
 	
 
 	private ProductRepository productRepository;
+	private PurchaseRepository purchaseRepository;
 
 	public ProductService(){}
 
 	@Autowired
-	public ProductService(ProductRepository productRepository) {this.productRepository = productRepository;}
+	public ProductService(ProductRepository productRepository,
+						  PurchaseRepository purchaseRepository)
+	{
+		this.productRepository = productRepository;
+		this.purchaseRepository = purchaseRepository;
+	}
 	
 	//adding  a product to the database
 	//when request has a file
@@ -36,10 +43,10 @@ public class ProductService {
     {
         String productName =  request.getHeader("ProductName");
         String productPrice = request.getHeader("ProductPrice");
-        int userId = request.getIntHeader("ProductUser");
 		int productId = request.getIntHeader("ProductId");
+        int addedBy = request.getIntHeader("AddedBy");
 
-        productRepository.save(new Product(productId,productName,file.getBytes(),productPrice,userId));
+        productRepository.saveAndFlush(new Product(productId,productName,file.getBytes(),productPrice,addedBy));
     }
 
 	//adding  a product to the database
@@ -64,6 +71,9 @@ public class ProductService {
 	//deleting  a product from database
 	public void deleteProduct(int id)
 	{
+		//delete from purchase if it exists
+		purchaseRepository.deletePurchaseByProductId(id);
+		//then delete product
 		productRepository.deleteById(id);
 	}
 	

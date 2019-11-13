@@ -3,6 +3,7 @@ package nehe.demo;
 import nehe.demo.Modals.Product;
 import nehe.demo.Modals.User;
 import nehe.demo.Repositories.ProductRepository;
+import nehe.demo.Repositories.PurchaseRepository;
 import nehe.demo.Services.ProductService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,9 +54,9 @@ public class ProductServiceTests {
     static class TestConfig {
 
         @Bean
-        public ProductService productService(final ProductRepository repository) {
+        public ProductService productService(final ProductRepository repository, final PurchaseRepository repository1) {
 
-            return new ProductService(repository);
+            return new ProductService(repository,repository1);
         }
     }
 

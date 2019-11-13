@@ -45,7 +45,7 @@ public class LoginController {
 
         return new LoginViewModel(loginViewModelService.getUserFirstName(principal.getName()),
                 loginViewModelService.getUserId(principal.getName()),
-                "User");
+                "USER");
     }
 
     @PostMapping("/register")
