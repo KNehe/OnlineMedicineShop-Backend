@@ -26,6 +26,11 @@ public interface UserRepository  extends JpaRepository<User,Integer> {
     @Query(value="UPDATE myusers set password=? where id=?",nativeQuery = true)
     int changePassword(String newPassword,int userId);
 
+    //find email by Userid
+    @Query(value = "SELECT email FROM myusers WHERE id=?1",nativeQuery = true)
+    String findUserEmail(int id);
+
+
 
 
 }
