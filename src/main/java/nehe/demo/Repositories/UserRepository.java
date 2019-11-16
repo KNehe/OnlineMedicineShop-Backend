@@ -30,6 +30,10 @@ public interface UserRepository  extends JpaRepository<User,Integer> {
     @Query(value = "SELECT email FROM myusers WHERE id=?1",nativeQuery = true)
     String findUserEmail(int id);
 
+    //find email by email
+    @Query(value = "SELECT email FROM myusers WHERE email=?1",nativeQuery = true)
+    String findEmail(String email);
+
 
 
 

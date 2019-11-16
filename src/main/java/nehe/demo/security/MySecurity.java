@@ -67,7 +67,7 @@ public class MySecurity extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 // dont authenticate this particular request
                 .authorizeRequests()
-                .antMatchers("/api/register").permitAll()
+                .antMatchers("/register").permitAll()
                 .antMatchers("/authenticate").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll().

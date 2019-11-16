@@ -82,7 +82,7 @@ public class PurchaseController {
              ))
             {  
                 //charge customer
-               if(stripeService.chargeCustomer("amount", customerId))
+               if(stripeService.chargeCustomer( request.getHeader("amount"), customerId))
                {
                    //save
                    purchaseService.addPurchase(purchase);

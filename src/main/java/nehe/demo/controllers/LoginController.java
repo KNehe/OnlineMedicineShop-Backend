@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 
 import nehe.demo.Modals.ChangePasswordModel;
 import nehe.demo.Modals.LoginViewModel;
-import nehe.demo.Modals.User;
 import nehe.demo.Services.LoginViewModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api")
 @CrossOrigin
 public class LoginController {
+
     private static final Gson gson = new Gson();
+    
     private LoginViewModelService loginViewModelService;
 
     @Autowired
@@ -47,24 +48,6 @@ public class LoginController {
                 loginViewModelService.getUserId(principal.getName()),
                 "USER");
     }
-
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user)
-    {
-
-      String result = loginViewModelService.registerUser(user);
-      
-      if (result.equals("User saved"))
-      {
-          return  ResponseEntity.ok(gson.toJson(result));
-
-      }
-
-      //An error occurred
-      return  ResponseEntity.ok(result);
-
-
-    }//posting
 
     //change password
     @PostMapping(value="/changePassword")

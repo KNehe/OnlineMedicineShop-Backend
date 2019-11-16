@@ -51,6 +51,15 @@ public class LoginViewModelService {
         return "User saved";
     }
 
+    //check if email exists
+    public boolean checkIfEmailExists(String email)
+    {
+        if(userRepository.findEmail(email) != null)
+        {
+            return true;
+        }
+        return false;
+    }
 
     //changePassword
     public Boolean changePassword(String newPassword,int userId)
