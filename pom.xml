@@ -116,6 +116,15 @@
             <version>15.3.0</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio -->
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>7.45.1</version>
+            <scope>runtime</scope>
+        </dependency>
+
+
 
     </dependencies>
 

@@ -1,13 +1,15 @@
 package nehe.demo.Services;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+// import java.util.ArrayList;
+// import java.util.List;
 
 import nehe.demo.Modals.Product;
 import nehe.demo.Repositories.ProductRepository;
 import nehe.demo.Repositories.PurchaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,14 +80,14 @@ public class ProductService {
 	}
 	
 	//get all the products from the database
-	public List<Product> getAllProducts()
+	public Page<Product> getAllProducts(int page)
     {
-		List<Product> allProducts = new ArrayList<>();
+		// List<Product> allProducts = new ArrayList<>();
 
-		productRepository.findAll()
-				.forEach(allProducts::add);
+		// productRepository.findAll()
+		// 		.forEach(allProducts::add);
 
-		return allProducts;
+		return productRepository.findAll( PageRequest.of(page, 4));
 	}
 	
 	//get a particular product from the database

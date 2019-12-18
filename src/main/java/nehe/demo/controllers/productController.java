@@ -3,14 +3,13 @@ package nehe.demo.controllers;
 
 
 import java.io.IOException;
-import java.util.List;
-
 
 import com.google.gson.Gson;
 import nehe.demo.Modals.Product;
 import nehe.demo.Services.ProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +34,9 @@ public class productController {
 
 	//get all products
 	@GetMapping("/allProducts")
-	public List<Product> getAllProducts()
+	public Page<Product> getAllProducts(@RequestParam(defaultValue = "0") int page)
 	{
-		return productService.getAllProducts();
+		return productService.getAllProducts(page);
 	}
 
     //add product
@@ -81,7 +80,10 @@ public class productController {
         productService.addProductOrUpdateProduct2(product);
 
         return ResponseEntity.ok(gson.toJson("Changes made successfully"));
-    }
+	}
+
+
+
 
 
 
