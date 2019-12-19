@@ -1,6 +1,8 @@
 package nehe.demo.Services;
 
+import nehe.demo.Modals.Orders;
 import nehe.demo.Modals.Purchase;
+import nehe.demo.Repositories.OrderRepository;
 import nehe.demo.Repositories.PurchaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,12 @@ import java.util.List;
 public class PurchaseService {
 
     private PurchaseRepository purchaseRepository;
+    private OrderRepository orderRepository;
 
     @Autowired
-    public PurchaseService(PurchaseRepository purchaseRepository) {
+    public PurchaseService(PurchaseRepository purchaseRepository,OrderRepository orderRepository) {
         this.purchaseRepository = purchaseRepository;
+        this.orderRepository = orderRepository;
     }
 
     public  void addPurchase(Purchase purchase)
@@ -25,10 +29,10 @@ public class PurchaseService {
         this.purchaseRepository.save(purchase);
     }
 
-    public List<Purchase> getAllPurchases()
+    public List<Orders> getAllPurchases()
     {
-       List<Purchase> purchases = new ArrayList<>();
-       purchaseRepository.findAll()
+       List<Orders> purchases = new ArrayList<>();
+       orderRepository.getAllPurchases()
                .forEach(purchases::add);
 
        return  purchases;

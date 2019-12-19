@@ -1,6 +1,8 @@
 package nehe.demo.controllers;
 
 import com.google.gson.Gson;
+
+import nehe.demo.Modals.Orders;
 import nehe.demo.Modals.Purchase;
 import nehe.demo.Repositories.UserRepository;
 import nehe.demo.Services.PurchaseService;
@@ -114,7 +116,7 @@ public class PurchaseController {
     
     //Fetch all purchase items including price,bought by,date and amount paid
     @GetMapping("/getAllPurchases")
-    public  List<Purchase> getAllPurchases()
+    public  List<Orders> getAllPurchases()
     {
         return  purchaseService.getAllPurchases();
 
