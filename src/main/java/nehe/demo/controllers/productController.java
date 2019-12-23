@@ -32,11 +32,19 @@ public class productController {
 		this.productService = productService;
 	}
 
-	//get all products
+	//get all products for Admins
 	@GetMapping("/allProducts")
-	public Page<Product> getAllProducts(@RequestParam(defaultValue = "0") int page)
-	{
-		return productService.getAllProducts(page);
+	public Page<Product> getAllProducts(@RequestParam(defaultValue = "0") int page,
+	@RequestParam(required = true) int hash)//hash is the user_id
+	{   
+		return productService.getAllProducts(page,hash);
+	}
+
+	//get all products for users
+	@GetMapping("/allProducts2")
+	public Page<Product> getAllProducts2(@RequestParam(defaultValue = "0") int page)
+	{   
+		return productService.getAllProducts2(page);
 	}
 
     //add product

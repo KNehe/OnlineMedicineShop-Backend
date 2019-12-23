@@ -116,10 +116,27 @@ public class PurchaseController {
     
     //Fetch all purchase items including price,bought by,date and amount paid
     @GetMapping("/getAllPurchases")
-    public  List<Orders> getAllPurchases()
+    public  List<Orders> getAllPurchases(@RequestParam(required = true)int hash)
     {
-        return  purchaseService.getAllPurchases();
+        return  purchaseService.getAllPurchases(hash); //hash is admin id
 
+    }
+
+    ///update purchase status
+    @PutMapping("/updatePurchaseStatus")
+    public ResponseEntity<String> updatePurchaseStatus(@RequestBody Orders orders)
+    {
+      Objects.requireNonNull(orders);
+      //greater than zero means atleast one row was affected i.e updated
+      if(purchaseService.updatePurchaseStatus(orders.getUser_id(), orders.getDate_paid(), orders.getStatus()) > 0)
+      {
+        return ResponseEntity.status(HttpStatus.OK).body(gson.toJson("Confirmed !"));
+      }
+      else
+      {
+          return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+          .body(gson.toJson("An error occured while confirming"));
+      }
     }
 
 

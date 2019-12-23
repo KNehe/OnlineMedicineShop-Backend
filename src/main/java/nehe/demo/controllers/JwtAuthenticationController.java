@@ -68,7 +68,8 @@ public class JwtAuthenticationController {
 	@PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) throws Exception
     {
-	    
+		Objects.requireNonNull(user);
+		
 		if(loginViewModelService.checkIfEmailExists(user.getEmail()))
 		{
 			return ResponseEntity
@@ -79,6 +80,14 @@ public class JwtAuthenticationController {
 		final String password = user.getPassword();
 		final String email = user.getEmail();
 		
+		//set role of user
+		if(user.getRole().equals("Buy"))
+		{
+			user.setRole("ADMIN");
+		}else if(user.getRole().equals("Sell"))
+		{
+			user.setRole("USER");
+		}
 		String result = loginViewModelService.registerUser(user);
 		
 		if (result.equals("User saved"))

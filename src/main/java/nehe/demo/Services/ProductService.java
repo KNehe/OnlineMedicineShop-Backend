@@ -10,6 +10,7 @@ import nehe.demo.Repositories.PurchaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,13 +80,26 @@ public class ProductService {
 		productRepository.deleteById(id);
 	}
 	
-	//get all the products from the database
-	public Page<Product> getAllProducts(int page)
+	//get all the products from the database for particular Admins
+	public Page<Product> getAllProducts(int page,int user_id)
     {
 		// List<Product> allProducts = new ArrayList<>();
 
 		// productRepository.findAll()
 		// 		.forEach(allProducts::add);
+        //  productRepository.getAllProducts(user_id)
+        Pageable pageable = PageRequest.of(page, 4);
+		return productRepository.findByUserId(user_id, pageable);
+	}
+
+	//get all the products from the database for users 
+	public Page<Product> getAllProducts2(int page)
+    {
+		// List<Product> allProducts = new ArrayList<>();
+
+		// productRepository.findAll()
+		// 		.forEach(allProducts::add);
+        //  productRepository.getAllProducts(user_id)
 
 		return productRepository.findAll( PageRequest.of(page, 4));
 	}

@@ -4,12 +4,13 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-
+//doesn't map to any table in database
 @Entity
 public class Orders
 {
     private String firstname;
     private String lastname;
+    private String phone;
     private String  products;
     private String price;
     @Id
@@ -19,14 +20,16 @@ public class Orders
     private Date date_paid;
     private String amount_paid;
     private String status;
+    private int created_by_id;
 
     public Orders() {
     }
 
-    public Orders(String firstname, String lastname, String products, String price, int id, int product_id, int user_id,
-            Date date_paid, String amount_paid, String status) {
+    public Orders(String firstname, String lastname, String phone, String products, String price, int id,
+            int product_id, int user_id, Date date_paid, String amount_paid, String status, int created_by_id) {
         this.firstname = firstname;
         this.lastname = lastname;
+        this.phone = phone;
         this.products = products;
         this.price = price;
         this.id = id;
@@ -35,6 +38,7 @@ public class Orders
         this.date_paid = date_paid;
         this.amount_paid = amount_paid;
         this.status = status;
+        this.created_by_id = created_by_id;
     }
 
     public String getFirstname() {
@@ -51,6 +55,14 @@ public class Orders
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getProducts() {
@@ -117,10 +129,17 @@ public class Orders
         this.status = status;
     }
 
+    public int getCreated_by_id() {
+        return created_by_id;
+    }
+
+    public void setCreated_by_id(int created_by_id) {
+        this.created_by_id = created_by_id;
+    }
+
     
 
-
-
+   
    
    
    
