@@ -1,9 +1,11 @@
 package nehe.demo.Services;
 
+import nehe.demo.Exception.UserNotFoundException;
 import nehe.demo.Modals.User;
 import nehe.demo.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -71,6 +73,29 @@ public class LoginViewModelService {
         else
         {
             return  false;
+        }
+    }
+
+    public User getOneUser(int userId)
+    {
+     return  userRepository.findById(userId)
+             .orElseThrow( ()-> new UserNotFoundException("User with Id: "+ userId +"does not exist"));
+    }
+
+    public boolean updateUser(User user)
+    {
+
+        int result1 = userRepository.changeFirstName(user.getFirstName(),user.getId());
+        int result2 = userRepository.changeLastName(user.getLastName(),user.getId());
+        int result3 = userRepository.changePhone(user.getPhone(),user.getId());
+        int result4 = userRepository.changeEmail(user.getEmail(),user.getId());
+
+        if (result1 == 1 && result2 == 1 && result3 == 1 && result4 == 1)
+        {
+            return  true;
+        }else
+        {
+            return false;
         }
     }
 

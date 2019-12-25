@@ -40,7 +40,7 @@ public class PurchaseService {
     }
 
     public int updatePurchaseStatus(int user_id,Date date_paid,String status)
-    {
+    {   
         return purchaseRepository.updatePurchaseStatus(status,user_id, date_paid);
     }
 }

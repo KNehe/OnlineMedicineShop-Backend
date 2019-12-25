@@ -43,8 +43,12 @@ public class PurchaseController {
     }
 
     @PostMapping("/purchase")
-    public ResponseEntity<String> addPurchase(@RequestBody Purchase purchase,
-     HttpServletRequest request) {
+    public ResponseEntity<String> addPurchase(@RequestBody Purchase purchase,@RequestParam String cardNumber,
+                                              @RequestParam  String month,
+                                              @RequestParam String year,
+                                              @RequestParam String cvc,
+                                              @RequestParam  String amount
+                                              ) {
 
         // check internet connection
         try {
@@ -68,7 +72,6 @@ public class PurchaseController {
         }
 
         Objects.requireNonNull(purchase);
-        Objects.requireNonNull(request);
         
 
         // stripe operations
@@ -78,13 +81,10 @@ public class PurchaseController {
         {
             String customerId = stripeService.createCustomer(userEmail);
             
-            if(stripeService.addCardToCustomer(customerId,
-               request.getHeader("cardNumber"), request.getHeader("month"), 
-               request.getHeader("year"), request.getHeader("cvc")
-             ))
+            if(stripeService.addCardToCustomer(customerId,cardNumber,month,year,cvc))
             {  
                 //charge customer
-               if(stripeService.chargeCustomer( request.getHeader("amount"), customerId))
+               if(stripeService.chargeCustomer(amount, customerId))
                {
                    //save
                    purchaseService.addPurchase(purchase);
@@ -129,7 +129,7 @@ public class PurchaseController {
       Objects.requireNonNull(orders);
       //greater than zero means atleast one row was affected i.e updated
       if(purchaseService.updatePurchaseStatus(orders.getUser_id(), orders.getDate_paid(), orders.getStatus()) > 0)
-      {
+      { 
         return ResponseEntity.status(HttpStatus.OK).body(gson.toJson("Confirmed !"));
       }
       else

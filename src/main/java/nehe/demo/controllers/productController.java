@@ -49,16 +49,21 @@ public class productController {
 
     //add product
 	@PostMapping("/addProduct")
-	public ResponseEntity<String> addProduct(@RequestPart("file") MultipartFile file, HttpServletRequest request) throws IOException
+	public ResponseEntity<String> addProduct(@RequestPart("file") MultipartFile file,
+											 @RequestParam(required = true) String ProductName,
+											 @RequestParam(required = true) String ProductPrice,
+											 @RequestParam(required = true) int AddedBy
+											 ) throws IOException
 	{
 		//check if the product already exists in db
-		if(productService.checkIfProductExists(request.getHeader("ProductName")))
+		if(productService.checkIfProductExists(ProductName))
 		{
 		  return 	ResponseEntity.ok(gson.toJson("Product exists !"));
 		}
-       productService.addProductOrUpdateProduct1(file,request);
 
-       return ResponseEntity.ok(gson.toJson("Product saved"));
+         productService.addProductOrUpdateProduct1(file,new Product(0,ProductName,file.getBytes(),ProductPrice,AddedBy));
+
+        return ResponseEntity.ok(gson.toJson("Product saved"));
 	}
 
 	//delete a product
@@ -70,11 +75,16 @@ public class productController {
 	}
 
     //edit product
-    //when request comes with a file
+//    when request comes with a file
     @PostMapping("/editProduct1")
-    public ResponseEntity<String> editProduct(@RequestPart("file") MultipartFile file, HttpServletRequest request) throws IOException
+    public ResponseEntity<String> editProduct(@RequestPart("file") MultipartFile file,
+											  @RequestParam(required = true) int ProductId,
+											  @RequestParam(required = true) String ProductName,
+											  @RequestParam(required = true) String ProductPrice,
+											  @RequestParam(required = true) int AddedBy
+	                                           ) throws IOException
     {
-        productService.addProductOrUpdateProduct1(file,request);
+        productService.addProductOrUpdateProduct1(file,new Product(ProductId,ProductName,file.getBytes(),ProductPrice,AddedBy));
 
         return ResponseEntity.ok(gson.toJson("Changes made successfully"));
     }

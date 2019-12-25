@@ -25,13 +25,14 @@ public class SatisticsController
     }
     
     @GetMapping("/statistics")
-    public Statistics getStatistics(@RequestParam(required = true) int adminId)
-    {
-      Objects.requireNonNull(adminId);
+    public Statistics getStatistics(@RequestParam(required = true) int hash)
+    { 
+        //hash depicts an id
+      Objects.requireNonNull(hash);
 
-      if(statisticsService.getStatistics(adminId) != null)
+      if(statisticsService.getStatistics(hash) != null)
       {
-        return statisticsService.getStatistics(adminId);
+        return statisticsService.getStatistics(hash);
       }
 
       return null;

@@ -5,12 +5,15 @@ import com.google.gson.Gson;
 
 import nehe.demo.Modals.ChangePasswordModel;
 import nehe.demo.Modals.LoginViewModel;
+import nehe.demo.Modals.User;
 import nehe.demo.Services.LoginViewModelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.security.Principal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,9 +60,30 @@ public class LoginController {
     {
       return ResponseEntity.ok(gson.toJson("Password changed successfully"));
     }
-    return ResponseEntity.ok(gson.toJson("Password not changed"));
+    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(gson.toJson("Password not changed"));
        
     }
-    
-    
+
+    @GetMapping(value = "/getOneUser")
+    public User getOneUser(@RequestParam(required = true) int userId)
+    {
+        //error handled in service using custom UserNotFoundException
+        //throw 404 to client
+        User user = loginViewModelService.getOneUser(userId);
+        user.setPassword("Couldn't Allow you see this");
+       return  user;
+    }
+
+    @PostMapping(value = "/updateUser")
+    public ResponseEntity<String> getOneUser(@Valid @RequestBody User user)
+    {
+        if(loginViewModelService.updateUser(user))
+        {
+            return ResponseEntity.ok(gson.toJson("Changes Saved"));
+        }else {
+            return ResponseEntity.status( HttpStatus.EXPECTATION_FAILED).body(gson.toJson("An error occurred") );
+        }
+    }
+
+
 }

@@ -42,14 +42,9 @@ public class ProductService {
 	
 	//adding  a product to the database
 	//when request has a file
-    public void addProductOrUpdateProduct1(MultipartFile file, HttpServletRequest request) throws IOException
+    public void addProductOrUpdateProduct1(MultipartFile file, Product product) throws IOException
     {
-        String productName =  request.getHeader("ProductName");
-        String productPrice = request.getHeader("ProductPrice");
-		int productId = request.getIntHeader("ProductId");
-        int addedBy = request.getIntHeader("AddedBy");
-
-        productRepository.saveAndFlush(new Product(productId,productName,file.getBytes(),productPrice,addedBy));
+        productRepository.saveAndFlush(product);
     }
 
 	//adding  a product to the database

@@ -27,10 +27,10 @@ public interface PurchaseRepository  extends JpaRepository<Purchase,Integer> {
    @Query(value = "SELECT COUNT(*) from purchase INNER JOIN products ON purchase.product_id = products.id WHERE products.user_id=?1",nativeQuery = true)
    int numberOfAllPurchaseOfProductsCreatedByParticularAdmin(int adminId);
 
-   @Query(value = "SELECT COUNT(*) from purchase INNER JOIN products ON purchase.product_id = products.id WHERE products.user_id=?1 AND products.status=Not Delivered ",nativeQuery = true)
+   @Query(value = "SELECT COUNT(*) from purchase INNER JOIN products ON purchase.product_id = products.id WHERE products.user_id=?1 AND purchase.status='Not Delivered'",nativeQuery = true)
    int purchasedAndNotDelivered(int adminId);
 
-   @Query(value = "SELECT COUNT(*) from purchase INNER JOIN products ON purchase.product_id = products.id WHERE products.user_id=?1 AND products.status=Delivered",nativeQuery = true)
+   @Query(value = "SELECT COUNT(*) from purchase INNER JOIN products ON purchase.product_id = products.id WHERE products.user_id=?1 AND purchase.status='Delivered'",nativeQuery = true)
    int purchasedAndDelivered(int adminId);
 
  

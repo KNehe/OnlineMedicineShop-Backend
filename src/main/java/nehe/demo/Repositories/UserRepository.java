@@ -14,6 +14,8 @@ public interface UserRepository  extends JpaRepository<User,Integer> {
 
     User findByEmail(String email);
 
+
+
     //get user id by email
     @Query(value = "SELECT id FROM myusers WHERE email=?1",nativeQuery = true)
     Optional<Integer> findUserId(String email);
@@ -33,6 +35,23 @@ public interface UserRepository  extends JpaRepository<User,Integer> {
     //find email by email
     @Query(value = "SELECT email FROM myusers WHERE email=?1",nativeQuery = true)
     String findEmail(String email);
+
+    @Modifying
+    @Query(value="UPDATE myusers set firstname=? where id=?",nativeQuery = true)
+    int changeFirstName(String firstName,int id);
+
+    @Modifying
+    @Query(value="UPDATE myusers set lastname=? where id=?",nativeQuery = true)
+    int changeLastName(String lastName,int id);
+
+    @Modifying
+    @Query(value="UPDATE myusers set email=? where id=?",nativeQuery = true)
+    int changeEmail(String email,int id);
+
+    @Modifying
+    @Query(value="UPDATE myusers set phone=? where id=?",nativeQuery = true)
+    int changePhone(String phone, int id);
+
 
 
 

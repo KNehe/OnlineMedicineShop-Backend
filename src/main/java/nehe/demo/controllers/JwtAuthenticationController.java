@@ -83,10 +83,10 @@ public class JwtAuthenticationController {
 		//set role of user
 		if(user.getRole().equals("Buy"))
 		{
-			user.setRole("ADMIN");
+			user.setRole("USER");
 		}else if(user.getRole().equals("Sell"))
 		{
-			user.setRole("USER");
+			user.setRole("ADMIN");
 		}
 		String result = loginViewModelService.registerUser(user);
 		
