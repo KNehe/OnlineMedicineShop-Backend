@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api")
+@RequestMapping("/api/v1/purchases")
 public class PurchaseController {
 
     private static final Gson gson = new Gson();
@@ -42,7 +42,7 @@ public class PurchaseController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/purchase")
+    @PostMapping("/")
     public ResponseEntity<String> addPurchase(@RequestBody Purchase purchase,@RequestParam String cardNumber,
                                               @RequestParam  String month,
                                               @RequestParam String year,
@@ -87,20 +87,20 @@ public class PurchaseController {
                }
                else
                {
-                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(gson.toJson("Charge Customer Error")); 
                }
 
             }else
             {
-                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(gson.toJson("Failed to add card")); 
             }
 
         } catch (Exception e) {
 
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(gson.toJson("Stripe payment error"));
 
         }
@@ -111,14 +111,14 @@ public class PurchaseController {
     
     
     //Fetch all purchase items including price,bought by,date and amount paid
-    @GetMapping("/getAllPurchases")
+    @GetMapping("/")
     public  List<Orders> getAllPurchases(@RequestParam(required = true)int hash)
     {
         return  purchaseService.getAllPurchases(hash); //hash is admin id
 
     }
 
-    @PutMapping("/updatePurchaseStatus")
+    @PutMapping("/")
     public ResponseEntity<String> updatePurchaseStatus(@RequestBody Orders orders)
     {
       Objects.requireNonNull(orders);

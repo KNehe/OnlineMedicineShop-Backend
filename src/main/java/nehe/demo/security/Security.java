@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class MySecurity extends WebSecurityConfigurerAdapter {
+public class Security extends WebSecurityConfigurerAdapter {
 
 
     private UserDetailsService userDetailsService;
@@ -30,9 +30,9 @@ public class MySecurity extends WebSecurityConfigurerAdapter {
 
 
    @Autowired
-    public  MySecurity( UserDetailsService userDetailsService,
-                       JwtAuthenticationEntryPoint authenticationEntryPoint,
-                       JwtRequestFilter requestFilter )
+    public Security(UserDetailsService userDetailsService,
+                    JwtAuthenticationEntryPoint authenticationEntryPoint,
+                    JwtRequestFilter requestFilter )
     {
         this.userDetailsService = userDetailsService;
         this.authenticationEntryPoint = authenticationEntryPoint;
@@ -60,10 +60,11 @@ public class MySecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+       String baseUrl = "/api/v1/users";
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/register").permitAll()
-                .antMatchers("/authenticate").permitAll()
+                .antMatchers(baseUrl+"/register").permitAll()
+                .antMatchers(baseUrl+"/login").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll().
                         anyRequest().authenticated().and().

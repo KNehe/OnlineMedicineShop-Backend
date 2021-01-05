@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1/users")
 @CrossOrigin
 public class AuthController {
 
@@ -51,7 +51,7 @@ public class AuthController {
     }
 
 
-    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
             throws Exception {
 
@@ -68,7 +68,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) throws Exception
-    {
+    {  System.out.println("user is"+ user);
         Objects.requireNonNull(user);
 
         if(loginViewModelService.checkIfEmailExists(user.getEmail()))
@@ -81,18 +81,12 @@ public class AuthController {
         final String password = user.getPassword();
         final String email = user.getEmail();
 
-        if(user.getRole().equals("Buy"))
-        {
-            user.setRole("USER");
-        }else if(user.getRole().equals("Sell"))
-        {
-            user.setRole("ADMIN");
-        }
+        user.setRole("USER");
+
         String result = loginViewModelService.registerUser(user);
 
         if (result.equals("User saved"))
         {
-
             authenticate(email, password);
 
             final UserDetails userDetails = jwtInMemoryUserDetailsService
@@ -108,6 +102,8 @@ public class AuthController {
     }
 
     private void authenticate(String username, String password) throws Exception {
+        System.out.println("user data : "+ username + password );
+
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
 
@@ -120,7 +116,7 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/getDetails")
+    @GetMapping("/user-details")
     public LoginViewModel login(HttpServletRequest request, Principal principal)
     {
         if(request.isUserInRole("ADMIN"))
@@ -135,7 +131,7 @@ public class AuthController {
                 "USER");
     }
 
-    @PostMapping(value="/changePassword")
+    @PostMapping(value="/change-password")
     public ResponseEntity<String> postMethodName(@RequestBody ChangePasswordModel changePasswordModel) {
     
     if(loginViewModelService.changePassword(changePasswordModel.getNewPassword(), changePasswordModel.getUserId() ))
@@ -146,16 +142,16 @@ public class AuthController {
        
     }
 
-    @GetMapping(value = "/getOneUser")
+    @GetMapping(value = "/get-one-user")
     public User getOneUser(@RequestParam(required = true) int userId)
     {
 
         User user = loginViewModelService.getOneUser(userId);
-        user.setPassword("Couldn't Allow you see this");
+        user.setPassword("");
        return  user;
     }
 
-    @PostMapping(value = "/updateUser")
+    @PostMapping(value = "/update-user")
     public ResponseEntity<String> getOneUser(@Valid @RequestBody User user)
     {
         if(loginViewModelService.updateUser(user))

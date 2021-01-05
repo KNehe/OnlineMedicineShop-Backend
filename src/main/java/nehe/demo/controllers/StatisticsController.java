@@ -14,7 +14,7 @@ import nehe.demo.Services.StatisticsService;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api")
+@RequestMapping("/api/v1/statistics")
 public class StatisticsController
 { 
     private StatisticsService statisticsService;
@@ -24,7 +24,7 @@ public class StatisticsController
         this.statisticsService = statisticsService;
     }
     
-    @GetMapping("/statistics")
+    @GetMapping("/")
     public Statistics getStatistics(@RequestParam(required = true) int id)
     { 
       Objects.requireNonNull(id);
