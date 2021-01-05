@@ -42,12 +42,17 @@ public class AuthController {
     private UserDetailsService jwtInMemoryUserDetailsService;
 
     @Autowired
-    public AuthController(LoginViewModelService loginViewModelService,AuthenticationManager authenticationManager,
+    public AuthController(LoginViewModelService loginViewModelService,
+                          AuthenticationManager authenticationManager,
                           JwtTokenUtil jwtTokenUtil,
                           UserDetailsService jwtInMemoryUserDetailsService
                           )
     {
         this.loginViewModelService =loginViewModelService;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.jwtInMemoryUserDetailsService = jwtInMemoryUserDetailsService;
+        this.loginViewModelService = loginViewModelService;
     }
 
 
