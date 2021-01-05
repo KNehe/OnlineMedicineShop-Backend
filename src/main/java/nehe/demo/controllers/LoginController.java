@@ -41,7 +41,6 @@ public class LoginController {
     {
         if(request.isUserInRole("ADMIN"))
         {
-            //principal.getName() returns email
             return new LoginViewModel(loginViewModelService.getUserFirstName(principal.getName()),
                                       loginViewModelService.getUserId(principal.getName()),
                                      "ADMIN");
@@ -52,7 +51,6 @@ public class LoginController {
                 "USER");
     }
 
-    //change password
     @PostMapping(value="/changePassword")
     public ResponseEntity<String> postMethodName(@RequestBody ChangePasswordModel changePasswordModel) {
     
@@ -67,8 +65,7 @@ public class LoginController {
     @GetMapping(value = "/getOneUser")
     public User getOneUser(@RequestParam(required = true) int userId)
     {
-        //error handled in service using custom UserNotFoundException
-        //throw 404 to client
+
         User user = loginViewModelService.getOneUser(userId);
         user.setPassword("Couldn't Allow you see this");
        return  user;

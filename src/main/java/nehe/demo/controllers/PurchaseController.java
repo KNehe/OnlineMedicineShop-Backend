@@ -74,8 +74,6 @@ public class PurchaseController {
         Objects.requireNonNull(purchase);
         
 
-        // stripe operations
-        // createCustomer
         String userEmail = userRepository.findUserEmail(purchase.getUser().getId());
         try 
         {
@@ -83,10 +81,8 @@ public class PurchaseController {
             
             if(stripeService.addCardToCustomer(customerId,cardNumber,month,year,cvc))
             {  
-                //charge customer
                if(stripeService.chargeCustomer(amount, customerId))
                {
-                   //save
                    purchaseService.addPurchase(purchase);
                }
                else
@@ -122,12 +118,10 @@ public class PurchaseController {
 
     }
 
-    ///update purchase status
     @PutMapping("/updatePurchaseStatus")
     public ResponseEntity<String> updatePurchaseStatus(@RequestBody Orders orders)
     {
       Objects.requireNonNull(orders);
-      //greater than zero means atleast one row was affected i.e updated
       if(purchaseService.updatePurchaseStatus(orders.getUser_id(), orders.getDate_paid(), orders.getStatus()) > 0)
       { 
         return ResponseEntity.status(HttpStatus.OK).body(gson.toJson("Confirmed !"));
@@ -135,7 +129,7 @@ public class PurchaseController {
       else
       {
           return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
-          .body(gson.toJson("An error occured while confirming"));
+          .body(gson.toJson("An error occurred while confirming"));
       }
     }
 

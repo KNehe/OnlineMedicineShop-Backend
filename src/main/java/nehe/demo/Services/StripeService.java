@@ -21,14 +21,11 @@ public class StripeService {
     @Autowired
     public  StripeService()
     {
-        Stripe.apiKey = "sk_test_m7BvdxL5Nhm6ojJEtPtlPOLo00qDXssoGt";
+        Stripe.apiKey = "";
     }
 
-    //create  a stripe customer
-    //returns a customer id
     public String createCustomer(String email) throws Exception
     {
-        //create a customer
         Map<String,Object> customerParam = new HashMap<>();
         customerParam.put("email",email);
         Customer customer = Customer.create(customerParam);
@@ -36,12 +33,10 @@ public class StripeService {
         return customer.getId();
     }
 
-    //create a card
     public boolean addCardToCustomer(String customerId,String number,String month,String year,String cvc) throws Exception
     {
         try
         {
-            //create a card
         Customer a = Customer.retrieve(customerId);
         Map<String,Object> cardParam = new HashMap<>();
         cardParam.put("number",number);
@@ -69,7 +64,6 @@ public class StripeService {
 
     }
 
-    //charge a customer
     public boolean chargeCustomer(String amount,String customerId) throws Exception
     {
         try

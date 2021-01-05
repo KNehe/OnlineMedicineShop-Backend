@@ -3,9 +3,9 @@ package nehe.demo.Modals;
 public class Statistics {
 
     private int allProducts;
-    private int allProductsById; //number of products created by a particular admin
+    private int allProductsById;
     private int allPurchases;
-    private int allPurchasesById;//number of purchases of products created by a particular admin
+    private int allPurchasesById;
     private int allDeliveredProducts;
     private int allNotDeliveredProducts;
 

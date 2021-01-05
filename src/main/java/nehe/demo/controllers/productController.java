@@ -32,22 +32,21 @@ public class productController {
 		this.productService = productService;
 	}
 
-	//get all products for Admins
+	// get all the products for particular Admin
 	@GetMapping("/allProducts")
 	public Page<Product> getAllProducts(@RequestParam(defaultValue = "0") int page,
-	@RequestParam(required = true) int hash)//hash is the user_id
+	@RequestParam(required = true) int id)
 	{   
-		return productService.getAllProducts(page,hash);
+		return productService.getAllProducts(page,id);
 	}
 
-	//get all products for users
+	//get all the products from the database for users
 	@GetMapping("/allProducts2")
 	public Page<Product> getAllProducts2(@RequestParam(defaultValue = "0") int page)
 	{   
 		return productService.getAllProducts2(page);
 	}
 
-    //add product
 	@PostMapping("/addProduct")
 	public ResponseEntity<String> addProduct(@RequestPart("file") MultipartFile file,
 											 @RequestParam(required = true) String ProductName,
@@ -55,7 +54,6 @@ public class productController {
 											 @RequestParam(required = true) int AddedBy
 											 ) throws IOException
 	{
-		//check if the product already exists in db
 		if(productService.checkIfProductExists(ProductName))
 		{
 		  return 	ResponseEntity.ok(gson.toJson("Product exists !"));
@@ -66,7 +64,6 @@ public class productController {
         return ResponseEntity.ok(gson.toJson("Product saved"));
 	}
 
-	//delete a product
 	@DeleteMapping("deleteProduct/{id}")
 	public ResponseEntity<String> deleteProduct(@PathVariable("id") int id)
 	{
@@ -74,7 +71,6 @@ public class productController {
 		return ResponseEntity.ok(gson.toJson("Product deleted"));
 	}
 
-    //edit product
 //    when request comes with a file
     @PostMapping("/editProduct1")
     public ResponseEntity<String> editProduct(@RequestPart("file") MultipartFile file,
@@ -101,11 +97,7 @@ public class productController {
 	}
 
 
-
-
-
-
-}//controller class
+}
 
 
 

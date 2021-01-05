@@ -49,7 +49,6 @@ public class JwtAuthenticationController {
 	}
 	
 	
-	//used to login in
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
 			throws Exception {
@@ -80,7 +79,6 @@ public class JwtAuthenticationController {
 		final String password = user.getPassword();
 		final String email = user.getEmail();
 		
-		//set role of user
 		if(user.getRole().equals("Buy"))
 		{
 			user.setRole("USER");
@@ -104,7 +102,6 @@ public class JwtAuthenticationController {
 
 		}
 
-		//An error occurred
 		return  ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(result);
 	}
 	

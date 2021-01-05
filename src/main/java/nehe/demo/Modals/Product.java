@@ -2,7 +2,6 @@ package nehe.demo.Modals;
 
 import javax.persistence.*;
 
-//defines details of a drug/medicine
 @Entity
 @Table(name="products")
 public class Product {
