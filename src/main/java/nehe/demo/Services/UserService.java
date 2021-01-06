@@ -15,12 +15,12 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class LoginViewModelService {
+public class UserService {
 
     private UserRepository userRepository;
 
     @Autowired
-    public LoginViewModelService( UserRepository userRepository)
+    public UserService(UserRepository userRepository)
     {
         this.userRepository = userRepository;
     }
@@ -92,6 +92,10 @@ public class LoginViewModelService {
         {
             return false;
         }
+    }
+
+    public  User findUserByEmail(String email){
+        return  userRepository.findByEmail(email);
     }
 
     @Bean

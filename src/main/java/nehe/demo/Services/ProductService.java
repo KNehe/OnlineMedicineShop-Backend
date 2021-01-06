@@ -40,9 +40,9 @@ public class ProductService {
 	
 	//adding  a product to the database
 	//when request has a file
-    public void addProductOrUpdateProduct1(MultipartFile file, Product product) throws IOException
+    public Product addProductOrUpdateProduct1(MultipartFile file, Product product) throws IOException
     {
-        productRepository.saveAndFlush(product);
+       return productRepository.saveAndFlush(product);
     }
 
 	//adding  a product to the database

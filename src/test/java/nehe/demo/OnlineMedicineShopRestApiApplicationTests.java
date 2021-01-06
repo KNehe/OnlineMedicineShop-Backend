@@ -3,9 +3,8 @@ package nehe.demo;
 import com.google.gson.Gson;
 import nehe.demo.Modals.JwtRequest;
 import nehe.demo.Modals.User;
-import nehe.demo.Services.LoginViewModelService;
+import nehe.demo.Services.UserService;
 import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import javax.validation.constraints.AssertTrue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
@@ -36,7 +33,7 @@ public class OnlineMedicineShopRestApiApplicationTests {
     private MockMvc mockMvc;
 
     @MockBean
-    private LoginViewModelService loginViewModelService;
+    private UserService userService;
 
     User user = new User("John","Moses","kk@gmail.com","dsdsd","0754504545",12,"User");
 
@@ -65,7 +62,7 @@ public class OnlineMedicineShopRestApiApplicationTests {
     @Test
     void shouldRegisterUserTest() throws Exception {
 
-        when(loginViewModelService.checkIfEmailExists("kd@gmail.com")).thenReturn(true);
+        when(userService.checkIfEmailExists("kd@gmail.com")).thenReturn(true);
 
         MvcResult mvcResult =  mockMvc.perform( post("/register")
         .contentType(MediaType.APPLICATION_JSON_VALUE)

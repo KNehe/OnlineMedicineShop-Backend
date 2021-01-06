@@ -12,8 +12,8 @@ public class Product {
 	private int id;
 	@Column(name="name")
 	private String name;
-	@Column(name="image")
-	private byte[] image;
+    @Column(length=1000000, name="image")
+    private byte[] image;
 	@Column(name="price")
 	private String price;
 

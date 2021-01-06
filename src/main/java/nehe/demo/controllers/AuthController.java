@@ -4,7 +4,7 @@ package nehe.demo.controllers;
 import com.google.gson.Gson;
 
 import nehe.demo.Modals.*;
-import nehe.demo.Services.LoginViewModelService;
+import nehe.demo.Services.UserService;
 import nehe.demo.Services.UserDetailsService;
 import nehe.demo.security.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,9 +32,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @CrossOrigin
 public class AuthController {
 
-    private static final Gson gson = new Gson();
-    
-    private LoginViewModelService loginViewModelService;
+
+    private UserService userService;
 
     private AuthenticationManager authenticationManager;
 
@@ -42,45 +42,47 @@ public class AuthController {
     private UserDetailsService jwtInMemoryUserDetailsService;
 
     @Autowired
-    public AuthController(LoginViewModelService loginViewModelService,
+    public AuthController(UserService userService,
                           AuthenticationManager authenticationManager,
                           JwtTokenUtil jwtTokenUtil,
                           UserDetailsService jwtInMemoryUserDetailsService
                           )
     {
-        this.loginViewModelService =loginViewModelService;
+        this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.jwtInMemoryUserDetailsService = jwtInMemoryUserDetailsService;
-        this.loginViewModelService = loginViewModelService;
+        this.userService = userService;
     }
 
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
+    public ResponseEntity<?> loginUser(@RequestBody JwtRequest authenticationRequest)
             throws Exception {
 
-        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+        authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
 
         final UserDetails userDetails = jwtInMemoryUserDetailsService
-                .loadUserByUsername(authenticationRequest.getUsername());
+                .loadUserByUsername(authenticationRequest.getEmail());
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        final User user = userService.findUserByEmail(authenticationRequest.getEmail());
+
+        return ResponseEntity.ok(new JwtResponse("Success",token,new LoginViewModel(user.getFirstName(),user.getLastName(), Optional.of(user.getId()),user.getRole())));
     }
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) throws Exception
-    {  System.out.println("user is"+ user);
+    public ResponseEntity<?> registerUser(@RequestBody User user) throws Exception
+    {
         Objects.requireNonNull(user);
 
-        if(loginViewModelService.checkIfEmailExists(user.getEmail()))
+        if(userService.checkIfEmailExists(user.getEmail()))
         {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
-                    .body(gson.toJson("User with Email exists"));
+                    .body(new GeneralResponse("Fail", "User with Email exists"));
         }
 
         final String password = user.getPassword();
@@ -88,7 +90,7 @@ public class AuthController {
 
         user.setRole("USER");
 
-        String result = loginViewModelService.registerUser(user);
+        String result = userService.registerUser(user);
 
         if (result.equals("User saved"))
         {
@@ -99,15 +101,14 @@ public class AuthController {
 
             final String token = jwtTokenUtil.generateToken(userDetails);
 
-            return ResponseEntity.ok(new JwtResponse(token));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new JwtResponse("Success",token,new LoginViewModel(user.getFirstName(),user.getLastName(), Optional.of(user.getId()),user.getRole())));
 
         }
 
-        return  ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(result);
+        return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new GeneralResponse("Fail", "An error occurred while saving user"));
     }
 
     private void authenticate(String username, String password) throws Exception {
-        System.out.println("user data : "+ username + password );
 
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
@@ -122,28 +123,32 @@ public class AuthController {
     }
 
     @GetMapping("/user-details")
-    public LoginViewModel login(HttpServletRequest request, Principal principal)
+    public LoginViewModel getUserDetails(HttpServletRequest request, Principal principal)
     {
+        final User user = userService.findUserByEmail(principal.getName());
+
         if(request.isUserInRole("ADMIN"))
         {
-            return new LoginViewModel(loginViewModelService.getUserFirstName(principal.getName()),
-                                      loginViewModelService.getUserId(principal.getName()),
+            return new LoginViewModel(user.getFirstName(),
+                                      user.getLastName(),
+                                     Optional.of(user.getId()),
                                      "ADMIN");
         }
 
-        return new LoginViewModel(loginViewModelService.getUserFirstName(principal.getName()),
-                loginViewModelService.getUserId(principal.getName()),
+        return new LoginViewModel(user.getFirstName(),
+                user.getLastName(),
+                Optional.of(user.getId()),
                 "USER");
     }
 
     @PostMapping(value="/change-password")
-    public ResponseEntity<String> postMethodName(@RequestBody ChangePasswordModel changePasswordModel) {
+    public ResponseEntity<?> postMethodName(@RequestBody ChangePasswordModel changePasswordModel) {
     
-    if(loginViewModelService.changePassword(changePasswordModel.getNewPassword(), changePasswordModel.getUserId() ))
+    if(userService.changePassword(changePasswordModel.getNewPassword(), changePasswordModel.getUserId() ))
     {
-      return ResponseEntity.ok(gson.toJson("Password changed successfully"));
+      return ResponseEntity.ok(new GeneralResponse("Success", "Password changed successfully"));
     }
-    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(gson.toJson("Password not changed"));
+    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new GeneralResponse("Fail", "Password not changed"));
        
     }
 
@@ -151,19 +156,19 @@ public class AuthController {
     public User getOneUser(@RequestParam(required = true) int userId)
     {
 
-        User user = loginViewModelService.getOneUser(userId);
+        User user = userService.getOneUser(userId);
         user.setPassword("");
        return  user;
     }
 
     @PostMapping(value = "/update-user")
-    public ResponseEntity<String> getOneUser(@Valid @RequestBody User user)
+    public ResponseEntity<?> getOneUser(@Valid @RequestBody User user)
     {
-        if(loginViewModelService.updateUser(user))
+        if(userService.updateUser(user))
         {
-            return ResponseEntity.ok(gson.toJson("Changes Saved"));
+            return ResponseEntity.ok(new GeneralResponse("Success","Changes Saved"));
         }else {
-            return ResponseEntity.status( HttpStatus.EXPECTATION_FAILED).body(gson.toJson("An error occurred") );
+            return ResponseEntity.status( HttpStatus.EXPECTATION_FAILED).body( new GeneralResponse("Fail", "An error occurred") );
         }
     }
 

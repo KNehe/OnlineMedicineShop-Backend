@@ -4,7 +4,8 @@ package nehe.demo.controllers;
 
 import java.io.IOException;
 
-import com.google.gson.Gson;
+import nehe.demo.Modals.DataResponse;
+import nehe.demo.Modals.GeneralResponse;
 import nehe.demo.Modals.Product;
 import nehe.demo.Services.ProductService;
 
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @CrossOrigin
@@ -24,8 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 public class ProductController {
 
 	private ProductService productService;
-
-	private static final Gson gson = new Gson();
 
 	@Autowired
 	public ProductController(ProductService productService)
@@ -36,48 +34,51 @@ public class ProductController {
 
 	//get all the products from the database for users
 	@GetMapping("/")
-	public Page<Product> getAllProducts2(@RequestParam(defaultValue = "0") int page)
+	public ResponseEntity<?> getAllProducts2(@RequestParam(defaultValue = "0") int page)
 	{   
-		return productService.getAllProducts2(page);
+		return ResponseEntity.ok(new DataResponse("Success", productService.getAllProducts2(page)));
 	}
 
 	@DeleteMapping("products/{id}")
-	public ResponseEntity<String> deleteProduct(@PathVariable("id") int id)
+	public ResponseEntity<?> deleteProduct(@PathVariable("id") int id)
 	{
 		productService.deleteProduct(id);
-		return ResponseEntity.ok(gson.toJson("Product deleted"));
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body( new GeneralResponse("Success", "Product deleted"));
 	}
 
 	@PostMapping("/")
-	public ResponseEntity<String> addProduct(@RequestPart("file") MultipartFile file,
-											 @RequestParam(required = true) String ProductName,
-											 @RequestParam(required = true) String ProductPrice,
-											 @RequestParam(required = true) int AddedBy
+	public ResponseEntity<?> addProduct(@RequestPart("file") MultipartFile file,
+											 @RequestParam(required = true) String productName,
+											 @RequestParam(required = true) String productPrice,
+											 @RequestParam(required = true) int addedBy
 	) throws IOException
 	{
-		if(productService.checkIfProductExists(ProductName))
+		if(productService.checkIfProductExists(productName))
 		{
-			return 	ResponseEntity.status(HttpStatus.BAD_REQUEST).body(gson.toJson("Product exists !"));
+			return 	ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GeneralResponse("Fail", "Product exists !"));
 		}
 
-		productService.addProductOrUpdateProduct1(file,new Product(0,ProductName,file.getBytes(),ProductPrice,AddedBy));
+		Product product = productService.addProductOrUpdateProduct1(file,new Product(0,productName,file.getBytes(),productPrice,addedBy));
 
-		return ResponseEntity.ok(gson.toJson("Product saved"));
+		return ResponseEntity.ok(new DataResponse("Success",product));
 	}
 
 
 	// get all the products for particular Admin
 	@GetMapping("/products2")
-	public Page<Product> getAllProducts(@RequestParam(defaultValue = "0") int page,
+	public ResponseEntity<?> getAllProducts(@RequestParam(defaultValue = "0") int page,
 										@RequestParam(required = true) int id)
 	{
-		return productService.getAllProducts(page,id);
+		Page<Product> products = productService.getAllProducts(page,id);
+
+		return ResponseEntity.ok(new DataResponse("Success",products));
+
 	}
 
 
 //    when request comes with a file
     @PostMapping("/edit-product1")
-    public ResponseEntity<String> editProduct(@RequestPart("file") MultipartFile file,
+    public ResponseEntity<?> editProduct(@RequestPart("file") MultipartFile file,
 											  @RequestParam(required = true) int ProductId,
 											  @RequestParam(required = true) String ProductName,
 											  @RequestParam(required = true) String ProductPrice,
@@ -86,18 +87,20 @@ public class ProductController {
     {
         productService.addProductOrUpdateProduct1(file,new Product(ProductId,ProductName,file.getBytes(),ProductPrice,AddedBy));
 
-        return ResponseEntity.ok(gson.toJson("Changes made successfully"));
-    }
+		return ResponseEntity.ok(new GeneralResponse("Success", "Changes made successfully"));
+
+	}
 
     //edit product
     //when request doesn't come with a file
     //file is included as bytes in Product object
     @PostMapping("/edit-product2")
-    public ResponseEntity<String> editProduct(@RequestBody Product product)
+    public ResponseEntity<?> editProduct(@RequestBody Product product)
     {
         productService.addProductOrUpdateProduct2(product);
 
-        return ResponseEntity.ok(gson.toJson("Changes made successfully"));
+		return ResponseEntity.ok(new GeneralResponse("Success", "Changes made successfully"));
+
 	}
 
 
