@@ -8,6 +8,7 @@ public class User {
 	
 	@Id
 	@Column(name="id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@Column(name="firstname")
 	private String firstName;
@@ -81,6 +82,4 @@ public class User {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-    
-	
 }

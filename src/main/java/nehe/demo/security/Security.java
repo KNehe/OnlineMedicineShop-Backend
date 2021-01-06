@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class MySecurity extends WebSecurityConfigurerAdapter {
+public class Security extends WebSecurityConfigurerAdapter {
 
 
     private UserDetailsService userDetailsService;
@@ -30,9 +30,9 @@ public class MySecurity extends WebSecurityConfigurerAdapter {
 
 
    @Autowired
-    public  MySecurity( UserDetailsService userDetailsService,
-                       JwtAuthenticationEntryPoint authenticationEntryPoint,
-                       JwtRequestFilter requestFilter )
+    public Security(UserDetailsService userDetailsService,
+                    JwtAuthenticationEntryPoint authenticationEntryPoint,
+                    JwtRequestFilter requestFilter )
     {
         this.userDetailsService = userDetailsService;
         this.authenticationEntryPoint = authenticationEntryPoint;
@@ -48,9 +48,6 @@ public class MySecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        // configure AuthenticationManager so that it knows from where to load
-        // user for matching credentials
-        // Use BCryptPasswordEncoder
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
@@ -63,22 +60,17 @@ public class MySecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // We don't need CSRF for this example
+       String baseUrl = "/api/v1/users";
         http.csrf().disable()
-                // dont authenticate this particular request
                 .authorizeRequests()
-                .antMatchers("/register").permitAll()
-                .antMatchers("/authenticate").permitAll()
+                .antMatchers(baseUrl+"/register").permitAll()
+                .antMatchers(baseUrl+"/login").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll().
-                // all other requests need to be authenticated
                         anyRequest().authenticated().and().
-                // make sure we use stateless session; session won't be used to
-                // store user's state.
                         exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        // Add a filter to validate the tokens with every request
         http.addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
 
     }

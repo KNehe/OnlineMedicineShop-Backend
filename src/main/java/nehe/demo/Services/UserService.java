@@ -15,33 +15,30 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class LoginViewModelService {
+public class UserService {
 
     private UserRepository userRepository;
 
     @Autowired
-    public LoginViewModelService( UserRepository userRepository)
+    public UserService(UserRepository userRepository)
     {
         this.userRepository = userRepository;
     }
 
-    //get userId by email
     public Optional<Integer> getUserId(String email)
     {
         return userRepository.findUserId(email);
     }
 
-    //get user first name by email
     public String getUserFirstName(String email)
     {
         return userRepository.findFirstName(email).orElse("First name for "+ email + " not found");
     }
 
-    //registerUser
     public String registerUser(User user)
     {
         try
-        {   //encode password
+        {
             user.setPassword(myPasswordEncoder().encode(user.getPassword()));
             userRepository.save(user);
         }
@@ -53,7 +50,6 @@ public class LoginViewModelService {
         return "User saved";
     }
 
-    //check if email exists
     public boolean checkIfEmailExists(String email)
     {
         if(userRepository.findEmail(email) != null)
@@ -63,7 +59,6 @@ public class LoginViewModelService {
         return false;
     }
 
-    //changePassword
     public Boolean changePassword(String newPassword,int userId)
     {   
         if(userRepository.changePassword( myPasswordEncoder().encode(newPassword) , userId) == 1)
@@ -97,6 +92,10 @@ public class LoginViewModelService {
         {
             return false;
         }
+    }
+
+    public  User findUserByEmail(String email){
+        return  userRepository.findByEmail(email);
     }
 
     @Bean

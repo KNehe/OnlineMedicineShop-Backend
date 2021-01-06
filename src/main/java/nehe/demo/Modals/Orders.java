@@ -4,7 +4,6 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-//doesn't map to any table in database
 @Entity
 public class Orders
 {

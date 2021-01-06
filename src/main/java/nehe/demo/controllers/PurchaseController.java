@@ -1,7 +1,8 @@
 package nehe.demo.controllers;
 
-import com.google.gson.Gson;
 
+import nehe.demo.Modals.DataResponse;
+import nehe.demo.Modals.GeneralResponse;
 import nehe.demo.Modals.Orders;
 import nehe.demo.Modals.Purchase;
 import nehe.demo.Repositories.UserRepository;
@@ -17,17 +18,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api")
+@RequestMapping("/api/v1/purchases")
 public class PurchaseController {
-
-    private static final Gson gson = new Gson();
 
     private PurchaseService purchaseService;
     private StripeService stripeService;
@@ -42,8 +39,8 @@ public class PurchaseController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/purchase")
-    public ResponseEntity<String> addPurchase(@RequestBody Purchase purchase,@RequestParam String cardNumber,
+    @PostMapping("/")
+    public ResponseEntity<?> addPurchase(@RequestBody Purchase purchase,@RequestParam String cardNumber,
                                               @RequestParam  String month,
                                               @RequestParam String year,
                                               @RequestParam String cvc,
@@ -61,21 +58,19 @@ public class PurchaseController {
 
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-            .body(gson.toJson("No Internet Connection"));
+            .body(new GeneralResponse("Fail", "Wrong url"));
 
         } catch (IOException e) {
 
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-            .body(gson.toJson("No Internet Connection"));
+            .body(new GeneralResponse("Fail", "No Internet Connection"));
 
         }
 
         Objects.requireNonNull(purchase);
         
 
-        // stripe operations
-        // createCustomer
         String userEmail = userRepository.findUserEmail(purchase.getUser().getId());
         try 
         {
@@ -83,59 +78,54 @@ public class PurchaseController {
             
             if(stripeService.addCardToCustomer(customerId,cardNumber,month,year,cvc))
             {  
-                //charge customer
                if(stripeService.chargeCustomer(amount, customerId))
                {
-                   //save
                    purchaseService.addPurchase(purchase);
                }
                else
                {
-                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(gson.toJson("Charge Customer Error")); 
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new GeneralResponse("Fail", "Charge Customer Error"));
                }
 
             }else
             {
-                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(gson.toJson("Failed to add card")); 
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new GeneralResponse("Fail", "Failed to add card"));
             }
 
         } catch (Exception e) {
 
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-            .body(gson.toJson("Stripe payment error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new GeneralResponse("Fail", "An error occurred while processing payment"));
 
         }
         
-        return ResponseEntity.ok(gson.toJson("Successfully bought !"));
+        return ResponseEntity.ok(new GeneralResponse("Fail", "Successfully bought !"));
       
     }
     
     
-    //Fetch all purchase items including price,bought by,date and amount paid
-    @GetMapping("/getAllPurchases")
-    public  List<Orders> getAllPurchases(@RequestParam(required = true)int hash)
+    @GetMapping("/")
+    public   ResponseEntity<DataResponse> getAllPurchases(@RequestParam(required = true)int id)
     {
-        return  purchaseService.getAllPurchases(hash); //hash is admin id
+        return  ResponseEntity.ok( new DataResponse("Success",  purchaseService.getAllPurchases(id)));
 
     }
 
-    ///update purchase status
-    @PutMapping("/updatePurchaseStatus")
-    public ResponseEntity<String> updatePurchaseStatus(@RequestBody Orders orders)
+    @PutMapping("/")
+    public ResponseEntity<?> updatePurchaseStatus(@RequestBody Orders orders)
     {
       Objects.requireNonNull(orders);
-      //greater than zero means atleast one row was affected i.e updated
       if(purchaseService.updatePurchaseStatus(orders.getUser_id(), orders.getDate_paid(), orders.getStatus()) > 0)
       { 
-        return ResponseEntity.status(HttpStatus.OK).body(gson.toJson("Confirmed !"));
+        return ResponseEntity.status(HttpStatus.OK).body(new GeneralResponse("Success", "Update successfull"));
       }
       else
       {
-          return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
-          .body(gson.toJson("An error occured while confirming"));
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(new GeneralResponse("Fail", "An error occurred"));
       }
     }
 

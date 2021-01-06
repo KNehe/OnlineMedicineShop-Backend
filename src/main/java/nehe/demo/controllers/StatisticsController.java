@@ -14,25 +14,24 @@ import nehe.demo.Services.StatisticsService;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api")
-public class SatisticsController
+@RequestMapping("/api/v1/statistics")
+public class StatisticsController
 { 
     private StatisticsService statisticsService;
     
     @Autowired
-    public SatisticsController(StatisticsService statisticsService) {
+    public StatisticsController(StatisticsService statisticsService) {
         this.statisticsService = statisticsService;
     }
     
-    @GetMapping("/statistics")
-    public Statistics getStatistics(@RequestParam(required = true) int hash)
+    @GetMapping("/")
+    public Statistics getStatistics(@RequestParam(required = true) int id)
     { 
-        //hash depicts an id
-      Objects.requireNonNull(hash);
+      Objects.requireNonNull(id);
 
-      if(statisticsService.getStatistics(hash) != null)
+      if(statisticsService.getStatistics(id) != null)
       {
-        return statisticsService.getStatistics(hash);
+        return statisticsService.getStatistics(id);
       }
 
       return null;

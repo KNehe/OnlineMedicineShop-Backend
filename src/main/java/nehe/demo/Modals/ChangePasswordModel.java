@@ -1,8 +1,6 @@
 package nehe.demo.Modals;
 
-/**
- * ChangePasswordModel
- */
+
 public class ChangePasswordModel {
 
     private String newPassword;

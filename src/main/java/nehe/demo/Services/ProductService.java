@@ -20,8 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 
 
-//this service is only for products
-//will be used in the Product Controller
 @Service
 @Transactional
 public class ProductService {
@@ -42,9 +40,9 @@ public class ProductService {
 	
 	//adding  a product to the database
 	//when request has a file
-    public void addProductOrUpdateProduct1(MultipartFile file, Product product) throws IOException
+    public Product addProductOrUpdateProduct1(MultipartFile file, Product product) throws IOException
     {
-        productRepository.saveAndFlush(product);
+       return productRepository.saveAndFlush(product);
     }
 
 	//adding  a product to the database
@@ -55,7 +53,6 @@ public class ProductService {
 		productRepository.save(product);
 	}
 
-    //check if a product exists
 	public boolean checkIfProductExists(String name)
 	{
 		Product product =  productRepository.findByName(name);
@@ -66,12 +63,9 @@ public class ProductService {
 		return false;
 	}
 
-	//deleting  a product from database
 	public void deleteProduct(int id)
 	{
-		//delete from purchase if it exists
 		purchaseRepository.deletePurchaseByProductId(id);
-		//then delete product
 		productRepository.deleteById(id);
 	}
 	
@@ -99,7 +93,6 @@ public class ProductService {
 		return productRepository.findAll( PageRequest.of(page, 4));
 	}
 	
-	//get a particular product from the database
 	public Product getOneProduct(int id)
 	{
 		return productRepository.findById(id).orElse(null);
